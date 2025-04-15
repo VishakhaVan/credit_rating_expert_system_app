@@ -12,6 +12,15 @@
         <h1>Credit Rating Expert System</h1>
         <input type="text" id="nameInput" placeholder="Enter customer name" />
         <button onclick="predict()">Predict Rating</button>
+        <button onclick="getAllEvaluations()">Show All Evaluations</button>
+        <button onclick="getOverallAccuracy()">Show Overall Accuracy</button>
+
+        <h2>Predict Rating by Parameters</h2>
+        <input type="number" id="incomeInput" placeholder="Enter Income" />
+        <input type="number" id="debtsInput" placeholder="Enter Number of Debts" />
+        <button onclick="predictFromParams()">Predict from Params</button>
+
+
         <div id="result"></div>
     </div>
     <script src="script.js"></script>
