@@ -49,11 +49,21 @@ overall_accuracy_handler(_) :-
 predict_from_params_handler(Request) :-
     http_parameters(Request, [
         income(IncomeStr, []),
-        debts(DebtsStr, [])
+        debts(DebtsStr, []),
+        creditScore(PaymentHistoryStr, []),
+        amountOwed(AmountOwedStr, []),
+        creditMix(CreditMixStr, []),
+        creditHistory(CreditLengthStr, []),
+        newCredit(NewCreditStr, [])
     ]),
     atom_number(IncomeStr, Income),
     atom_number(DebtsStr, Debts),
-    predict_from_params(Income, Debts, Rating),
+    atom_number(PaymentHistoryStr, creditScore),
+    atom_number(AmountOwedStr, amountOwed),
+    atom_number(CreditMixStr, creditMix),
+    atom_number(CreditLengthStr, creditHistory),
+    atom_number(NewCreditStr, newCredit),
+    predict_from_params(Income, Debts, creditScore, amountOwed, creditMix, creditHistory, newCredit, Rating),
     reply_json(json{status: "success", income: Income, debts: Debts, rating: Rating}).
 
 

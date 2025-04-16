@@ -48,8 +48,23 @@ function getOverallAccuracy() {
 function predictFromParams() {
     const income = document.getElementById("incomeInput").value;
     const debts = document.getElementById("debtsInput").value;
+    const creditScore = document.getElementById("Score").value;
+    const amountOwed = document.getElementById("amountOwed").value;
+    const creditMix = document.getElementById("creditMix").value;
+    const creditHistory = document.getElementById("creditHistory").value;
+    const newCredit = document.getElementById("newCredit").value;
+    
 
-    fetch(`/predict_params?income=${encodeURIComponent(income)}&debts=${encodeURIComponent(debts)}`)
+    fetch(`/predict_params?income=${encodeURIComponent(income)}
+   
+    &debts=${encodeURIComponent(debts)}
+    &creditScore=${encodeURIComponent(creditScore)}
+    &amountOwed=${encodeURIComponent(amountOwed)}
+    &creditMix=${encodeURIComponent(creditMix)}
+    &creditHistory=${encodeURIComponent(creditHistory)}
+    &newCredit=${encodeURIComponent(newCredit)}
+
+    }`)
         .then(response => response.json())
         .then(data => {
             const resultDiv = document.getElementById("result");
@@ -57,7 +72,11 @@ function predictFromParams() {
                 resultDiv.innerHTML = `
                     <p><strong>Income:</strong> ${data.income}</p>
                     <p><strong>Debts:</strong> ${data.debts}</p>
-                    <p><strong>Predicted Rating:</strong> ${data.rating}</p>
+                    <p><strong>Credit score:</strong> ${data.creditScore}</p>
+                    <p><strong>Amount Owed:</strong> ${data.amountOwed}</p>
+                    <p><strong>Credit Mix:</strong> ${data.creditMix}</p>
+                    <p><strong>Credit History:</strong> ${data.creditHistory}</p>
+                    <p><strong>New Credit:</strong> ${data.newCredit}</p>
                 `;
             } else {
                 resultDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;
