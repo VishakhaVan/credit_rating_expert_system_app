@@ -53,18 +53,21 @@ function predictFromParams() {
     const creditMix = document.getElementById("creditMix").value;
     const creditHistory = document.getElementById("creditHistory").value;
     const newCredit = document.getElementById("newCredit").value;
-    
 
-    fetch(`/predict_params?income=${encodeURIComponent(income)}
-   
-    &debts=${encodeURIComponent(debts)}
-    &creditScore=${encodeURIComponent(creditScore)}
-    &amountOwed=${encodeURIComponent(amountOwed)}
-    &creditMix=${encodeURIComponent(creditMix)}
-    &creditHistory=${encodeURIComponent(creditHistory)}
-    &newCredit=${encodeURIComponent(newCredit)}
+    const params = new URLSearchParams({
+        income: income.trim(),
+        debts: debts.trim(),
+        creditScore: creditScore.trim(),
+        amountOwed: amountOwed.trim(),
+        creditMix: creditMix.trim(),
+        creditHistory: creditHistory.trim(),
+        newCredit: newCredit.trim()
+    });
+    fetch(`/predict_params?${params.toString()}`)
 
-    }`)
+        // fetch(`/predict_params?income=${encodeURIComponent(income)}&debts=${encodeURIComponent(debts)}&creditScore=${encodeURIComponent(creditScore)}&amountOwed=${encodeURIComponent(amountOwed)}&creditMix=${encodeURIComponent(creditMix)}&creditHistory=${encodeURIComponent(creditHistory)}&newCredit=${encodeURIComponent(newCredit)}
+
+        // `)
         .then(response => response.json())
         .then(data => {
             const resultDiv = document.getElementById("result");
@@ -77,6 +80,7 @@ function predictFromParams() {
                     <p><strong>Credit Mix:</strong> ${data.creditMix}</p>
                     <p><strong>Credit History:</strong> ${data.creditHistory}</p>
                     <p><strong>New Credit:</strong> ${data.newCredit}</p>
+                    <p><strong>Rating:</strong> ${data.rating}</p>
                 `;
             } else {
                 resultDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;

@@ -20,6 +20,9 @@ user:file_search_path(static, 'static').
 :- http_handler(root(accuracy), overall_accuracy_handler, []).
 :- http_handler(root(predict_params), predict_from_params_handler, []).
 
+:- set_prolog_flag(debug, true).
+
+
 % Serve static files from the 'static' folder
 serve_files(Request) :-
     http_reply_from_files(static('.'), [], Request).
@@ -27,7 +30,7 @@ serve_files(Request) :-
 % Handle rating prediction
 predict_handler(Request) :-
     http_parameters(Request, [name(Name, [])]),
-    ( customer(Name, _, _, _, _) ->
+    ( customer(Name, _, _, _, _, _, _, _, _, _) ->
         predict_rating(Name, Rating),
         evaluate_prediction(Name, Accuracy),
         reply_json(json{status: "success", name: Name, rating: Rating, accuracy: Accuracy})
@@ -37,7 +40,7 @@ predict_handler(Request) :-
 
 all_evaluations_handler(_) :-
     findall(json{name: Name, accuracy: Accuracy}, (
-        customer(Name, _, _, _, _),
+        customer(Name, _, _, _, _, _, _, _, _, _),
         evaluate_prediction(Name, Accuracy)
     ), List),
     reply_json(json{status: "success", evaluations: List}).
@@ -47,24 +50,44 @@ overall_accuracy_handler(_) :-
     reply_json(json{status: "success", accuracy: Accuracy}).
 
 predict_from_params_handler(Request) :-
-    http_parameters(Request, [
-        income(IncomeStr, []),
-        debts(DebtsStr, []),
-        creditScore(PaymentHistoryStr, []),
-        amountOwed(AmountOwedStr, []),
-        creditMix(CreditMixStr, []),
-        creditHistory(CreditLengthStr, []),
-        newCredit(NewCreditStr, [])
-    ]),
-    atom_number(IncomeStr, Income),
-    atom_number(DebtsStr, Debts),
-    atom_number(PaymentHistoryStr, creditScore),
-    atom_number(AmountOwedStr, amountOwed),
-    atom_number(CreditMixStr, creditMix),
-    atom_number(CreditLengthStr, creditHistory),
-    atom_number(NewCreditStr, newCredit),
-    predict_from_params(Income, Debts, creditScore, amountOwed, creditMix, creditHistory, newCredit, Rating),
-    reply_json(json{status: "success", income: Income, debts: Debts, rating: Rating}).
+     http_parameters(Request,
+        [ income(IncomeAtom, []),
+          debts(DebtsAtom, []),
+          creditScore(CreditScoreAtom, []),
+          amountOwed(AmountOwedAtom, []),
+          creditMix(CreditMixAtom, []),
+          creditHistory(CreditHistoryAtom, []),
+          newCredit(NewCreditAtom, [])
+        ]),
+    normalize_space(atom(IncomeTrimmed), IncomeAtom),
+    normalize_space(atom(DebtsTrimmed), DebtsAtom),
+    normalize_space(atom(CreditScoreTrimmed), CreditScoreAtom),
+    normalize_space(atom(AmountOwedTrimmed), AmountOwedAtom),
+    normalize_space(atom(CreditMixTrimmed), CreditMixAtom),
+    normalize_space(atom(CreditHistoryTrimmed), CreditHistoryAtom),
+    normalize_space(atom(NewCreditTrimmed), NewCreditAtom),
+    atom_number(IncomeTrimmed, Income),
+    atom_number(DebtsTrimmed, Debts),
+    atom_number(CreditScoreTrimmed, CreditScore),
+    atom_number(AmountOwedTrimmed, AmountOwed),
+    atom_number(CreditMixTrimmed, CreditMix),
+    atom_number(CreditHistoryTrimmed, CreditHistory),
+    atom_number(NewCreditTrimmed, NewCredit),
+
+    predict_from_params(Income, Debts, CreditScore, AmountOwed, CreditMix, CreditHistory, NewCredit, Rating),
+
+    reply_json(json{
+    status: "success",
+    income: Income,
+    debts: Debts,
+    creditScore: CreditScore,
+    amountOwed: AmountOwed,
+    creditMix: CreditMix,
+    creditHistory: CreditHistory,
+    newCredit: NewCredit,
+    rating: Rating
+}).
+
 
 
 % Entry Point

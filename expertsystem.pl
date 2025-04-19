@@ -10,7 +10,7 @@
     predict_from_params/8
 ]).
 
-% ------------ MODIFIED KNOWLEDGE BASE ---------------
+% ------------ KNOWLEDGE BASE ---------------
 
 % customer(Name, Age, Income, Debts, PaymentHistoryScore, AmountOwed, CreditMixScore, CreditLengthYears, NewCreditInquiries, ExpectedRating).
 
@@ -26,8 +26,9 @@ customer(peter, 20, 20000, 0, 1, 4000, 0, 1, 2, poor).
 customer(olivia, 32, 55000, 2, 3, 16000, 1, 5, 1, fair).
 
 % ------------ INFERENCE RULES ---------------
+
 predict_rating(Name, Rating) :-
-    customer(Name, _, Income, Debts, _),
+    customer(Name, _, Income, Debts, _, _, _, _, _, _),
     (
         (Income >= 75000, Debts >= 3) -> Rating = excellent;
         (Income >= 50000, Income < 75000, Debts >= 2) -> Rating = good;
@@ -42,21 +43,21 @@ predict_rating(Name, Rating) :-
     !.
 
 evaluate_prediction(Name, Accuracy) :-
-    customer(Name, _, _, _, ActualRating),
+    customer(Name, _, _, _, _, _, _, _, _, ActualRating),
     predict_rating(Name, PredictedRating),
     (ActualRating = PredictedRating -> Accuracy = correct ; Accuracy = incorrect).
 
 % ------------ SHOW ALL EVALUATIONS ---------------
 show_all_evaluations :-
-    customer(Name, _, _, _, _),
+    customer(Name, _, _, _, _, _, _, _, _, _),
     evaluate_prediction(Name, Accuracy),
     format('~w: ~w~n', [Name, Accuracy]),
     fail.
-show_all_evaluations.  % end after all fail
+show_all_evaluations.
 
-% ------------ CALCULATE GENERAL ACCURACY ---------------
+% ------------ GENERAL ACCURACY ---------------
 general_accuracy(Accuracy) :-
-    findall(Name, customer(Name, _, _, _, _), Names),
+    findall(Name, customer(Name, _, _, _, _, _, _, _, _, _), Names),
     include(is_correct, Names, CorrectPredictions),
     length(Names, Total),
     length(CorrectPredictions, Correct),
@@ -65,8 +66,7 @@ general_accuracy(Accuracy) :-
 is_correct(Name) :-
     evaluate_prediction(Name, correct).
 
-% Define factor evaluation rules
-
+% ------------ FACTOR RULES ---------------
 good_income(Income) :- Income >= 75000.
 average_income(Income) :- Income >= 50000, Income < 75000.
 low_income(Income) :- Income < 50000.
@@ -95,7 +95,7 @@ no_new_credit(Inquiries) :- Inquiries =:= 0.
 some_new_credit(Inquiries) :- Inquiries =:= 1.
 lots_of_new_credit(Inquiries) :- Inquiries > 1.
 
-% Inference rule for predicting rating
+% ------------ PREDICT BASED ON PARAMETERS ---------------
 predict_from_params(Income, Debts, PaymentHistory, AmountOwed, CreditMix, CreditLength, NewCredit, Rating) :-
     good_income(Income),
     low_debt(Debts),
@@ -129,7 +129,6 @@ predict_from_params(Income, Debts, PaymentHistory, AmountOwed, CreditMix, Credit
 predict_from_params(_, _, _, _, _, _, _, Rating) :-
     Rating = fair.
 
-
 % ------------ INTERACTIVE LOOP ---------------
 expert_system_loop :-
     write('--- Credit Rating Expert System ---'), nl,
@@ -144,7 +143,7 @@ expert_system_loop :-
 handle_choice(1) :-
     write('Enter customer name: '),
     read(Name),
-    (customer(Name, _, _, _, _) ->
+    (customer(Name, _, _, _, _, _, _, _, _, _) ->
         predict_rating(Name, Rating),
         format('Predicted rating for ~w: ~w~n', [Name, Rating])
     ;
