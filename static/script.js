@@ -11,6 +11,7 @@ function predict() {
                     <p><strong>Name:</strong> ${data.name}</p>
                     <p><strong>Predicted Rating:</strong> ${data.rating}</p>
                     <p><strong>Accuracy:</strong> ${data.accuracy}</p>
+                    <p><strong>tips:</strong> ${data.tips}</p>
                 `;
 
                 // Then fetch the explanation
@@ -63,6 +64,9 @@ function getOverallAccuracy() {
 }
 
 function predictFromParams() {
+
+
+
     const income = document.getElementById("incomeInput").value;
     const debts = document.getElementById("debtsInput").value;
     const creditScore = document.getElementById("Score").value;
@@ -88,6 +92,7 @@ function predictFromParams() {
         .then(response => response.json())
         .then(data => {
             const resultDiv = document.getElementById("result");
+            const riskDiv = document.getElementById("risk-category");
             if (data.status === "success") {
                 resultDiv.innerHTML = `
                     <p><strong>Income:</strong> ${data.income}</p>
@@ -99,7 +104,19 @@ function predictFromParams() {
                     <p><strong>New Credit:</strong> ${data.newCredit}</p>
                     <p><strong>Rating:</strong> ${data.rating}</p>
                     <p><strong>Explanation:</strong> ${data.explanation}</p>
+                    <p><strong>Tips:</strong> ${data.improvement_tips}</p>
                 `;
+
+                if (data.rating === "excellent") {
+                    riskDiv.innerHTML = `<p><strong>Risk:</strong>Low</p>`
+                    riskDiv.style.color = "green";
+                } else if (data.rating === "good" || data.rating === "fair") {
+                    riskDiv.innerHTML = `<p><strong>Risk:</strong> Medium </p>`
+                    riskDiv.style.color = "orange";
+                } else if (data.rating === "poor") {
+                    riskDiv.innerHTML = `<p><strong>Risk:</strong> High</p>`
+                    riskDiv.style.color = "red";
+                }
             } else {
                 resultDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;
             }
@@ -107,5 +124,11 @@ function predictFromParams() {
         .catch(error => {
             document.getElementById("result").innerHTML = `<p style="color: red;">Error: ${error}</p>`;
         });
+
+    riskDiv.innerText = `Risk Category: ${riskCategory}`;
+
+
 }
+
+
 

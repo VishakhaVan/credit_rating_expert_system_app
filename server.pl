@@ -20,6 +20,7 @@ user:file_search_path(static, 'static').
 :- http_handler(root(accuracy), overall_accuracy_handler, []).
 :- http_handler(root(predict_params), predict_from_params_handler, []).
 :- http_handler(root(explanation), explanation_handler, []).
+:- http_handler(root(improvement_tips), improvement_tips_handler, []).
 
 
 :- set_prolog_flag(debug, true).
@@ -35,7 +36,8 @@ predict_handler(Request) :-
     ( customer(Name, _, _, _, _, _, _, _, _, _) ->
         predict_rating(Name, Rating),
         evaluate_prediction(Name, Accuracy),
-        reply_json(json{status: "success", name: Name, rating: Rating, accuracy: Accuracy})
+        improvement_tips(Name, Tips),  % Get tips here
+        reply_json(json{status: "success", name: Name, rating: Rating, accuracy: Accuracy, tips: Tips})
     ;
         reply_json(json{status: "error", message: "Customer not found"})
     ).
@@ -78,6 +80,9 @@ predict_from_params_handler(Request) :-
 
     predict_from_params(Income, Debts, CreditScore, AmountOwed, CreditMix, CreditHistory, NewCredit, Rating),
     explain_from_params(Income, Debts, CreditScore, AmountOwed, CreditMix, CreditHistory, NewCredit, Explanation),
+    improvement_tips_from_params(Income, Debts, CreditScore, AmountOwed, CreditMix, CreditHistory, NewCredit, Tips),
+    format("DEBUG: Rating = ~w~n", [Rating]),
+
     reply_json(json{
     status: "success",
     income: Income,
@@ -88,7 +93,8 @@ predict_from_params_handler(Request) :-
     creditHistory: CreditHistory,
     newCredit: NewCredit,
     rating: Rating,
-    explanation: Explanation
+    explanation: Explanation,
+    improvement_tips: Tips
 }).
 
 explanation_handler(Request) :-

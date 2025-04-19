@@ -6,10 +6,11 @@
     customer/10,
     show_all_evaluations/0,
     general_accuracy/1,
-    expert_system_loop/0,
     predict_from_params/8,
     explain_rating/2,
-    explain_from_params/8
+    explain_from_params/8,
+    improvement_tips/2,
+    improvement_tips_from_params/8
 ]).
 
 % ------------ KNOWLEDGE BASE ---------------
@@ -189,40 +190,43 @@ new_credit_reason(Inquiries, 'no new credit inquiries') :- no_new_credit(Inquiri
 new_credit_reason(Inquiries, 'some new credit inquiries') :- some_new_credit(Inquiries).
 new_credit_reason(Inquiries, 'many new credit inquiries') :- lots_of_new_credit(Inquiries).
 
+% ------------ IMPROVEMENT TIPS ---------------
 
-% ------------ INTERACTIVE LOOP ---------------
-expert_system_loop :-
-    write('--- Credit Rating Expert System ---'), nl,
-    write('1. Predict rating by name'), nl,
-    write('2. Show evaluation accuracy of all customers'), nl,
-    write('3. Show overall accuracy'), nl,
-    write('4. Exit'), nl,
-    write('Enter your choice: '),
-    read(Choice),
-    handle_choice(Choice).
+improvement_tips_from_params(_, Debts, PaymentHistory, _, _, _, NewCredit, Tips) :-
+    findall(Tip, (
+        debt_improvement(Debts, Tip);
+        payment_history_improvement(PaymentHistory, Tip);
+        new_credit_improvement(NewCredit, Tip)
+    ), TipsList),
+    atomic_list_concat(TipsList, ', ', Tips).
 
-handle_choice(1) :-
-    write('Enter customer name: '),
-    read(Name),
-    (customer(Name, _, _, _, _, _, _, _, _, _) ->
-        predict_rating(Name, Rating),
-        format('Predicted rating for ~w: ~w~n', [Name, Rating])
-    ;
-        write('Customer not found.'), nl),
-    expert_system_loop.
+improvement_tips(Name, Tips) :-
+    customer(Name, _, _, Debts, PaymentHistory, _, _, _, NewCredit, _),
+    findall(Tip, (
+        debt_improvement(Debts, Tip);
+        payment_history_improvement(PaymentHistory, Tip);
+        new_credit_improvement(NewCredit, Tip)
+    ), TipsList),
+    atomic_list_concat(TipsList, ', ', Tips).
 
-handle_choice(2) :-
-    show_all_evaluations,
-    expert_system_loop.
+% Improvement rules for debts
+debt_improvement(Debts, 'Pay off at least 30% of outstanding dues') :-
+    high_debt(Debts).
+debt_improvement(Debts, 'Work on reducing your debt-to-income ratio') :-
+    moderate_debt(Debts).
 
-handle_choice(3) :-
-    general_accuracy(Acc),
-    format('Overall accuracy: ~2f%%~n', [Acc]),
-    expert_system_loop.
+% Improvement rules for payment history
+payment_history_improvement(Score, 'Try to improve your payment history by making payments on time') :-
+    poor_payment_history(Score).
+payment_history_improvement(Score, 'Maintain a good payment history for a better credit score') :-
+    good_payment_history(Score).
 
-handle_choice(4) :-
-    write('Exiting expert system. Goodbye!'), nl.
+% Improvement rules for new credit inquiries
+new_credit_improvement(Inquiries, 'Avoid applying for multiple loans at once') :-
+    lots_of_new_credit(Inquiries).
+new_credit_improvement(Inquiries, 'Be mindful of your new credit inquiries') :-
+    some_new_credit(Inquiries).
 
-handle_choice(_) :-
-    write('Invalid choice. Try again.'), nl,
-    expert_system_loop.
+
+  
+    
