@@ -1,4 +1,3 @@
-
 function predict() {
     const name = document.getElementById("nameInput").value;
 
@@ -7,11 +6,27 @@ function predict() {
         .then(data => {
             const resultDiv = document.getElementById("result");
             if (data.status === "success") {
+                // First show the basic prediction result
                 resultDiv.innerHTML = `
                     <p><strong>Name:</strong> ${data.name}</p>
                     <p><strong>Predicted Rating:</strong> ${data.rating}</p>
                     <p><strong>Accuracy:</strong> ${data.accuracy}</p>
                 `;
+
+                // Then fetch the explanation
+                fetch(`/explanation?name=${encodeURIComponent(name)}`)
+                    .then(res => res.json())
+                    .then(expData => {
+                        if (expData.status === "success") {
+                            resultDiv.innerHTML += `
+                                <p><strong>Explanation:</strong> ${expData.explanation}</p>
+                            `;
+                        } else {
+                            resultDiv.innerHTML += `
+                                <p style="color: red;"><strong>Explanation Error:</strong> ${expData.message}</p>
+                            `;
+                        }
+                    });
             } else {
                 resultDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;
             }
@@ -20,6 +35,8 @@ function predict() {
             document.getElementById("result").innerHTML = `<p style="color: red;">Error: ${error}</p>`;
         });
 }
+
+
 
 function getAllEvaluations() {
     fetch('/evaluations')
@@ -81,6 +98,7 @@ function predictFromParams() {
                     <p><strong>Credit History:</strong> ${data.creditHistory}</p>
                     <p><strong>New Credit:</strong> ${data.newCredit}</p>
                     <p><strong>Rating:</strong> ${data.rating}</p>
+                    <p><strong>Explanation:</strong> ${data.explanation}</p>
                 `;
             } else {
                 resultDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;

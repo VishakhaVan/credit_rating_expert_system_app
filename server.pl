@@ -19,6 +19,8 @@ user:file_search_path(static, 'static').
 :- http_handler(root(evaluations), all_evaluations_handler, []).
 :- http_handler(root(accuracy), overall_accuracy_handler, []).
 :- http_handler(root(predict_params), predict_from_params_handler, []).
+:- http_handler(root(explanation), explanation_handler, []).
+
 
 :- set_prolog_flag(debug, true).
 
@@ -75,7 +77,7 @@ predict_from_params_handler(Request) :-
     atom_number(NewCreditTrimmed, NewCredit),
 
     predict_from_params(Income, Debts, CreditScore, AmountOwed, CreditMix, CreditHistory, NewCredit, Rating),
-
+    explain_from_params(Income, Debts, CreditScore, AmountOwed, CreditMix, CreditHistory, NewCredit, Explanation),
     reply_json(json{
     status: "success",
     income: Income,
@@ -85,8 +87,18 @@ predict_from_params_handler(Request) :-
     creditMix: CreditMix,
     creditHistory: CreditHistory,
     newCredit: NewCredit,
-    rating: Rating
+    rating: Rating,
+    explanation: Explanation
 }).
+
+explanation_handler(Request) :-
+    http_parameters(Request, [name(Name, [])]),
+    ( customer(Name, _, _, _, _, _, _, _, _, _) ->
+        explain_rating(Name, Explanation),
+        reply_json(json{status: "success", name: Name, explanation: Explanation})
+    ;
+        reply_json(json{status: "error", message: "Customer not found"})
+    ).
 
 
 

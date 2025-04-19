@@ -7,7 +7,9 @@
     show_all_evaluations/0,
     general_accuracy/1,
     expert_system_loop/0,
-    predict_from_params/8
+    predict_from_params/8,
+    explain_rating/2,
+    explain_from_params/8
 ]).
 
 % ------------ KNOWLEDGE BASE ---------------
@@ -128,6 +130,65 @@ predict_from_params(Income, Debts, PaymentHistory, AmountOwed, CreditMix, Credit
 
 predict_from_params(_, _, _, _, _, _, _, Rating) :-
     Rating = fair.
+
+% ------------ EXPLANATION RULES ---------------
+
+explain_rating(Name, Explanation) :-
+    customer(Name, _, Income, Debts, PaymentHistory, AmountOwed, CreditMix, CreditLength, NewCredit, _),
+    findall(Reason, (
+        income_reason(Income, Reason);
+        debt_reason(Debts, Reason);
+        payment_history_reason(PaymentHistory, Reason);
+        amount_owed_reason(AmountOwed, Reason);
+        credit_mix_reason(CreditMix, Reason);
+        credit_length_reason(CreditLength, Reason);
+        new_credit_reason(NewCredit, Reason)
+    ), Reasons),
+    atomic_list_concat(Reasons, ', ', Explanation).
+
+explain_from_params(Income, Debts, PaymentHistory, AmountOwed, CreditMix, CreditLength, NewCredit, Explanation) :-
+    findall(Reason, (
+        income_reason(Income, Reason);
+        debt_reason(Debts, Reason);
+        payment_history_reason(PaymentHistory, Reason);
+        amount_owed_reason(AmountOwed, Reason);
+        credit_mix_reason(CreditMix, Reason);
+        credit_length_reason(CreditLength, Reason);
+        new_credit_reason(NewCredit, Reason)
+    ), Reasons),
+    atomic_list_concat(Reasons, ', ', Explanation).
+
+
+% ----- REASON MAPPINGS -----
+
+income_reason(Income, 'high income') :- good_income(Income).
+income_reason(Income, 'average income') :- average_income(Income).
+income_reason(Income, 'low income') :- low_income(Income).
+
+debt_reason(Debts, 'high debt-to-income ratio') :- high_debt(Debts).
+debt_reason(Debts, 'moderate debt') :- moderate_debt(Debts).
+debt_reason(Debts, 'low debt') :- low_debt(Debts).
+
+payment_history_reason(Score, 'excellent payment history') :- excellent_payment_history(Score).
+payment_history_reason(Score, 'good payment history') :- good_payment_history(Score).
+payment_history_reason(Score, 'poor payment history') :- poor_payment_history(Score).
+
+amount_owed_reason(Amount, 'low amount owed') :- low_amount_owed(Amount).
+amount_owed_reason(Amount, 'moderate amount owed') :- moderate_amount_owed(Amount).
+amount_owed_reason(Amount, 'high amount owed') :- high_amount_owed(Amount).
+
+credit_mix_reason(Mix, 'diverse credit mix') :- diverse_credit_mix(Mix).
+credit_mix_reason(Mix, 'some credit mix') :- some_credit_mix(Mix).
+credit_mix_reason(Mix, 'poor credit mix') :- poor_credit_mix(Mix).
+
+credit_length_reason(Years, 'long credit history') :- long_credit_history(Years).
+credit_length_reason(Years, 'medium credit history') :- medium_credit_history(Years).
+credit_length_reason(Years, 'short credit history') :- short_credit_history(Years).
+
+new_credit_reason(Inquiries, 'no new credit inquiries') :- no_new_credit(Inquiries).
+new_credit_reason(Inquiries, 'some new credit inquiries') :- some_new_credit(Inquiries).
+new_credit_reason(Inquiries, 'many new credit inquiries') :- lots_of_new_credit(Inquiries).
+
 
 % ------------ INTERACTIVE LOOP ---------------
 expert_system_loop :-
