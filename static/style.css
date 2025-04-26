@@ -75,7 +75,8 @@ h2 {
 }
 
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+.select-input {
     background-color: white;
     border: 1px solid #ced4da;
     border-radius: var(--border-radius);
@@ -86,10 +87,41 @@ input[type="number"] {
 }
 
 input[type="text"]:focus,
-input[type="number"]:focus {
+input[type="number"]:focus,
+.select-input:focus {
     border-color: var(--primary-color);
     outline: none;
     box-shadow: 0 0 0 3px rgba(42, 109, 201, 0.2);
+}
+
+.select-input {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+    padding-right: 30px;
+}
+
+.parameter-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.parameter-group label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--dark-color);
+}
+
+.parameter-group input[type="number"] {
+    margin-top: 8px;
+    font-size: 14px;
+    padding: 8px 12px;
+    background-color: #f9f9f9;
 }
 
 .action-buttons {
@@ -137,18 +169,6 @@ input[type="number"]:focus {
     margin-bottom: 20px;
 }
 
-.parameter-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.parameter-group label {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 5px;
-    color: var(--dark-color);
-}
-
 .wide-btn {
     display: block;
     width: 100%;
@@ -168,6 +188,11 @@ input[type="number"]:focus {
     font-size: 1.2rem;
     margin: 0 auto;
     max-width: 600px;
+    text-align: left;
+}
+
+#result p {
+    margin-bottom: 8px;
 }
 
 #risk-category {
@@ -175,19 +200,25 @@ input[type="number"]:focus {
     font-weight: bold;
     margin-top: 15px;
     padding: 10px;
+    border-radius: var(--border-radius);
 }
 
-/* Risk category styling */
 .risk-low {
+    background-color: rgba(40, 167, 69, 0.1);
     color: var(--success-color);
+    border: 1px solid rgba(40, 167, 69, 0.2);
 }
 
 .risk-medium {
+    background-color: rgba(255, 193, 7, 0.1);
     color: var(--warning-color);
+    border: 1px solid rgba(255, 193, 7, 0.2);
 }
 
 .risk-high {
+    background-color: rgba(220, 53, 69, 0.1);
     color: var(--danger-color);
+    border: 1px solid rgba(220, 53, 69, 0.2);
 }
 
 /* Responsive adjustments */

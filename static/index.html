@@ -31,38 +31,80 @@
             <h2>Detailed Credit Analysis</h2>
             <div class="parameters-grid">
                 <div class="parameter-group">
-                    <label for="incomeInput">Annual Income ($)</label>
-                    <input type="number" id="incomeInput" placeholder="e.g. 60000" />
+                    <label for="incomeInput">Annual Income</label>
+                    <select id="incomeSelect" class="select-input" onchange="updateIncome()">
+                        <option value="">Select Income Range</option>
+                        <option value="40000">Low Income (< $50,000)</option>
+                        <option value="60000">Average Income ($50,000 - $74,999)</option>
+                        <option value="100000">Good Income (≥ $75,000)</option>
+                    </select>
+                    <input type="number" id="incomeInput" placeholder="Or enter exact amount" />
                 </div>
                 
                 <div class="parameter-group">
                     <label for="debtsInput">Number of Debts</label>
-                    <input type="number" id="debtsInput" placeholder="e.g. 3" />
+                    <select id="debtsSelect" class="select-input" onchange="updateDebts()">
+                        <option value="">Select Debt Level</option>
+                        <option value="0">Low Debt (None)</option>
+                        <option value="2">Moderate Debt (1-2)</option>
+                        <option value="4">High Debt (3+)</option>
+                    </select>
+                    <input type="number" id="debtsInput" placeholder="Or enter exact number" min="0" />
                 </div>
                 
                 <div class="parameter-group">
-                    <label for="Score">Credit Score</label>
-                    <input type="number" id="Score" placeholder="e.g. 750" />
+                    <label for="Score">Payment History Score (1-5)</label>
+                    <select id="scoreSelect" class="select-input" onchange="updateScore()">
+                        <option value="">Select Payment History</option>
+                        <option value="1">Poor History (< 2)</option>
+                        <option value="3">Good History (2-3)</option>
+                        <option value="5">Excellent History (4+)</option>
+                    </select>
+                    <input type="number" id="Score" placeholder="Or enter exact score" min="1" max="5" />
                 </div>
                 
                 <div class="parameter-group">
                     <label for="amountOwed">Total Amount Owed ($)</label>
-                    <input type="number" id="amountOwed" placeholder="e.g. 15000" />
+                    <select id="amountSelect" class="select-input" onchange="updateAmount()">
+                        <option value="">Select Amount Range</option>
+                        <option value="5000">Low Amount (< $10,000)</option>
+                        <option value="20000">Moderate Amount ($10,000 - $29,999)</option>
+                        <option value="40000">High Amount (≥ $30,000)</option>
+                    </select>
+                    <input type="number" id="amountOwed" placeholder="Or enter exact amount" />
                 </div>
                 
                 <div class="parameter-group">
-                    <label for="creditMix">Credit Mix (1-10)</label>
-                    <input type="number" id="creditMix" placeholder="e.g. 7" min="1" max="10" />
+                    <label for="creditMix">Credit Mix (0-2)</label>
+                    <select id="mixSelect" class="select-input" onchange="updateMix()">
+                        <option value="">Select Credit Mix</option>
+                        <option value="0">Poor Mix (0)</option>
+                        <option value="1">Some Mix (1)</option>
+                        <option value="2">Diverse Mix (2+)</option>
+                    </select>
+                    <input type="number" id="creditMix" placeholder="Or enter exact value" min="0" max="2" />
                 </div>
                 
                 <div class="parameter-group">
                     <label for="creditHistory">Credit History (years)</label>
-                    <input type="number" id="creditHistory" placeholder="e.g. 5" />
+                    <select id="historySelect" class="select-input" onchange="updateHistory()">
+                        <option value="">Select History Length</option>
+                        <option value="3">Short History (< 5 years)</option>
+                        <option value="7">Medium History (5-9 years)</option>
+                        <option value="12">Long History (10+ years)</option>
+                    </select>
+                    <input type="number" id="creditHistory" placeholder="Or enter exact years" min="0" />
                 </div>
                 
                 <div class="parameter-group">
                     <label for="newCredit">New Credit Applications</label>
-                    <input type="number" id="newCredit" placeholder="e.g. 2" />
+                    <select id="newCreditSelect" class="select-input" onchange="updateNewCredit()">
+                        <option value="">Select New Credit Level</option>
+                        <option value="0">No New Credit (0)</option>
+                        <option value="1">Some New Credit (1)</option>
+                        <option value="3">Lots of New Credit (2+)</option>
+                    </select>
+                    <input type="number" id="newCredit" placeholder="Or enter exact number" min="0" />
                 </div>
             </div>
             
